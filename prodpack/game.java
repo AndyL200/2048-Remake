@@ -1,11 +1,18 @@
+package prodpack;
 import javax.swing.*;
 import java.util.*;
 
-public class game extends Thread {
+public class game {
+
+
     class tile {
         int value;
         String image;
     }
+
+
+
+
     class board{
         tile[][] board;
         boolean[][] availbility;
@@ -35,6 +42,9 @@ public class game extends Thread {
                     }
         }
         return full;
+    }
+    public void end() {
+
     }
     //maybe this should be in react?
         public void rendering(tile t) {
@@ -70,23 +80,21 @@ public class game extends Thread {
             }
             
         }
-        public void end() {
-            
-        }
-        public void start() {
-            JFrame start = new JFrame("start");
-            
-        }
+      
         public void up() {
             for(int i = 0; i < board.length; i++) {
                 for(int k = 0; k < board[0].length; k++) {
 
                 }
             }
+        
         }
     }
+
+
+
+    
     public static void main(String args[]) {
         game g = new game();
-        g.start();
     }
 }
