@@ -180,7 +180,7 @@ public class Game {
             for(int col = 0; col < this.gameboard.board[0].length;col++) {
                 this.gameboard.rendering(this.gameboard.board[row][col]);
                 ImageIcon image = new ImageIcon(this.gameboard.board[row][col].image);
-                griddy[row][col] = new JLabel(image);
+                griddy[row][col].setIcon(image);
             }
         }
         
