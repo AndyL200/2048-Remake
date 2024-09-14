@@ -47,8 +47,23 @@ public class Game {
                         }
                 return true;
             }
-            public void end() {
 
+            public boolean win() {
+                for(int x = 0; x < board.length;x++) {
+                    for(int y = 0; y < board[0].length;y++) {
+                        if(board[x][y].value == 2048 ) {return true;}
+                    }
+                }
+        return false;
+            }
+            //End game
+            public boolean lose() {
+                if(isFull()) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
             }
             //maybe this should be in react?
                 public void rendering(Tile t) {
@@ -68,8 +83,7 @@ public class Game {
                     }
                 }
                 public void CreateRand() {
-                    if(isFull()) {
-                        end();//improving the efficiency adding this line at the top rather than stack recursions
+                    if(isFull()) {//improving the efficiency adding this line at the top rather than stack recursions
                         return;
                     }
  
@@ -204,7 +218,31 @@ public class Game {
                 griddy[row][col].setIcon(image);
             }
         }
-        
+
+        if(gameboard.lose()) {
+            JPanel end = new JPanel();
+            JLabel endScreen = new JLabel(new ImageIcon("Assets/Designer (1).png"));
+            end.add(endScreen);
+            this.window.dispose();
+            JFrame gameOver = new JFrame("Over Screen");
+            gameOver.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            gameOver.setSize(256,256);
+            gameOver.setLocationRelativeTo(null);
+            gameOver.getContentPane().add(end);
+            gameOver.setVisible(true);
+        }
+        else if(gameboard.win()) {
+            JPanel end = new JPanel();
+            JLabel endScreen = new JLabel(new ImageIcon("Assets/Designer (1).png"));
+            end.add(endScreen);
+            this.window.dispose();
+            JFrame gameWin = new JFrame("Win Screen");
+            gameWin.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            gameWin.setSize(256,256);
+            gameWin.setLocationRelativeTo(null);
+            gameWin.getContentPane().add(end);
+            gameWin.setVisible(true);
+        }
         tset.revalidate();
         tset.repaint();
     }
@@ -240,6 +278,7 @@ public class Game {
         window.getContentPane().add(tileset);
 
         window.setVisible(true);
+        
         window.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
