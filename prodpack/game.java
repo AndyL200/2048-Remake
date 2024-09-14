@@ -16,11 +16,9 @@ public class Game {
                     }
                 }
                 Tile[][] board;
-                boolean[][] filled;
                 int highScore;
 
                 Board() {
-                    this.filled = new boolean[4][4];
                     this.board = new Tile[4][4];
 
                     for (int i = 0; i < 4; i++) {
@@ -42,11 +40,11 @@ public class Game {
                 //Tailwind CSS
 
                 public boolean isFull() {
-                        for(boolean[] b : filled) {
-                            for(boolean bool : b) {
-                                if(bool == false) {return false;}
+                        for(int x = 0; x < board.length;x++) {
+                            for(int y = 0; y < board[0].length;y++) {
+                                if(board[x][y].value == 0 ) {return false;}
                             }
-                }
+                        }
                 return true;
             }
             public void end() {
@@ -83,84 +81,107 @@ public class Game {
                         x = rand%4;
                         y = rand/4;
 
-                    }while(filled[x][y]);
+                    }while(board[x][y].value != 0);
                     
                     board[x][y].value = weightedChance();
-                    filled[x][y]=true;
                 }
 
 
-                public Tile merge(Tile t1, Tile t2) {
-                    Tile res = new Tile();
-                    res.value = t1.value + t2.value;
-                    return res;
-                }
-            
-                public void up() {
-                    for(int x = 0; x < board.length; x++) {
-                        for(int y = 1; y < board[0].length; y++) {
-                            
-                            if(filled[x][y-1]) {
-                            Tile temp = board[x][y];
-                            board[x][y] = board[x][y-1];
-                            board[x][y-1] = temp;
-                            boolean t = filled[x][y];
-                            filled[x][y] = filled[x][y-1];
-                            filled[x][y-1] = t;
-                            }
-                            else if(board[x][y-1] == board[x][y]) {
-                                board[x][y] = merge(board[x][y-1],board[x][y]);
-                                board[x][y-1].value = 0;
-                                filled[x][y-1] = false;
-                                y--;
-                            }
-                        }
-                    }
+        //             public Tile merge(Tile t1, Tile t2) {
+        //                 Tile res = new Tile();
+        //                 res.value = t1.value + t2.value;
+        //                 return res;
+        // }
+                //works in a top-down manner
+                //for each column 
+                /*
+                 * [0][0][2][0]
+                 * [0][0][0][0]
+                 * [0][0][2][0]
+                 * row 1 col 3 '2' value will not move, but the row 3 col 3 '2' value will and will also merge with the one above
+                 *Multimerging? what if two '2's combine to make 4 underneath an existing 4? Should those 4s directly merge?
+                 */
                 
-                }
-                public void down() {
-                    for(int x = 0; x < board.length; x++) {
-                        for(int y = 0; y < board[0].length-1; y++) {
-                            if(filled[x][y+1]) {
-                            Tile temp = board[x][y];
-                            board[x][y] = board[x][y+1];
-                            board[x][y+1] = temp;
-                            boolean t = filled[x][y];
-                            filled[x][y] = filled[x][y+1];
-                            filled[x][y+1] = t;
-                            }
+                    public void up() {
+                        for(int x = 0; x < board[0].length; x++) {
+                            for(int y = 1; y < board.length; y++) {
+
+                                if(board[y][x].value != 0) {
+                                    int k = y;
+                                    while(k > 0 && board[k-1][x].value == 0) {
+                                        board[k-1][x].value = board[k][x].value;
+                                        board[k][x].value = 0;
+                                        k--;
+                                    }
+                                    //if the while loop terminated because the value above the current one equal to it, we want to merge them
+                                    if(k > 0 && board[k-1][x].value == board[k][x].value) {
+                                        board[k-1][x].value *= 2; //no need for a merge function (faster)
+                                        board[k][x].value = 0;
+                                    }
                         }
                     }
                 }
-                public void left() {
-                    for(int x = 1; x < board.length; x++) {
-                        for(int y = 0; y < board[0].length; y++) {
-                            if(filled[x-1][y]) {
-                            Tile temp = board[x][y];
-                            board[x][y] = board[x-1][y];
-                            board[x-1][y] = temp;
-                            boolean t = filled[x][y];
-                            filled[x][y] = filled[x-1][y];
-                            filled[x-1][y] = t;
-                            }
+                    
+        }
+                    public void down() {
+                        for(int x = 0; x < board[0].length; x++) {
+                            for(int y = 0; y < board.length-1; y++) {
+                                if(board[y][x].value != 0) {
+                                    int k = y;
+                                    while(k < board.length-1 && board[k+1][x].value == 0) {
+                                        board[k+1][x].value = board[k][x].value;
+                                        board[k][x].value = 0;
+                                        k++;
+                                    }
+                                    //if the while loop terminated because the value above the current one equal to it, we want to merge them
+                                    if(k < board.length-1 && board[k+1][x].value == board[k][x].value) {
+                                        board[k+1][x].value *= 2; //no need for a merge function (faster)
+                                        board[k][x].value = 0;
+                                    }
                         }
                     }
                 }
-                public void right() {
-                    for(int x = 0; x < board.length-1; x++) {
-                        for(int y = 1; y < board[0].length; y++) {
-                            if(filled[x+1][y]) {
-                            Tile temp = board[x][y];
-                            board[x][y] = board[x+1][y];
-                            board[x+1][y] = temp;
-                            boolean t = filled[x][y];
-                            filled[x][y] = filled[x+1][y];
-                            filled[x+1][y] = t;
-                            }
+        }
+                    public void left() {
+                            for(int y = 0; y < board.length; y++) {
+                                for(int x = 1; x < board[0].length; x++) {
+                                if(board[y][x].value != 0) {
+                                    int k = x;
+                                    while(k > 0 && board[y][k-1].value == 0) {
+                                        board[y][k-1].value = board[y][k].value;
+                                        board[y][k].value = 0;
+                                        k--;
+                                    }
+                                    //if the while loop terminated because the value above the current one equal to it, we want to merge them
+                                    if(k > 0 && board[y][k-1].value == board[y][k].value) {
+                                        board[y][k-1].value *= 2; //no need for a merge function (faster)
+                                        board[y][k].value = 0;
+                                    }
                         }
                     }
-                }   
-            }
+                }
+        }
+                    public void right() {
+                            for(int y = 0; y < board.length; y++) {//rows
+                                for(int x = 0; x < board[0].length-1; x++) {
+                                if(board[y][x].value != 0) {
+                                    int k = x;
+                                    while(k < board[0].length-1 && board[y][k+1].value == 0) {
+                                        board[y][k+1].value = board[y][k].value;
+                                        board[y][k].value = 0;
+                                        k++;
+                                    }
+                                    //if the while loop terminated because the value above the current one equal to it, we want to merge them
+                                    if(k < board[0].length-1 && board[y][k+1].value == board[y][k].value) {
+                                        board[y][k+1].value *= 2; //no need for a merge function (faster)
+                                        board[y][k].value = 0;
+                                    }
+                        }
+                    }
+                }
+        }
+
+    }
 
     JFrame window;
     Board gameboard;
