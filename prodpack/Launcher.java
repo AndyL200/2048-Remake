@@ -7,10 +7,13 @@ public class Launcher {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                MainWindow main = new MainWindow();
-                main.show();
+                Game main = new Game();
+                main.start();
             }
         });
 
+    }
+    public static void main(String args[]) {
+        Launcher l = new Launcher();
     }
 }
