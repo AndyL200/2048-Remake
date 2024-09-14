@@ -55,43 +55,51 @@ public class Game {
             //maybe this should be in react?
                 public void rendering(Tile t) {
                     switch(t.value) {
-                        case 2: t.image = "Assets/2048 block 2.png";
-                        case 4: t.image = "Assets/2048 4 block.png";
-                        case 8: t.image = "Assets/2048 block 8.png";
-                        case 16: t.image = "Assets/2048 Block 16.png";
-                        case 32: t.image = "Assets/2048 32 block.png";
-                        case 64: t.image = "Assets/2048 64 block.png";
-                        case 128: t.image = "Assets/2048 128 block.png";
-                        case 256: t.image = "Assets/2048 256 block.png";
-                        case 512: t.image = "Assets/2048 512 block.png";
-                        case 1024: t.image = "Assets/2048 1024 block.png";
-                        case 2048: t.image = "Assets/2048 2048 block.png";
-                        default: t.image = "Assets/2048 empty tile.png";
+                        case 2: t.image = "Assets/2048 block 2.png";break;
+                        case 4: t.image = "Assets/2048 4 block.png";break;
+                        case 8: t.image = "Assets/2048 block 8.png";break;
+                        case 16: t.image = "Assets/2048 Block 16.png";break;
+                        case 32: t.image = "Assets/2048 32 block.png";break;
+                        case 64: t.image = "Assets/2048 64 block.png";break;
+                        case 128: t.image = "Assets/2048 128 block.png";break;
+                        case 256: t.image = "Assets/2048 256 block.png";break;
+                        case 512: t.image = "Assets/2048 512 block.png";break;
+                        case 1024: t.image = "Assets/2048 1024 block.png";break;
+                        case 2048: t.image = "Assets/2048 2048 block.png";break;
+                        default: t.image = "Assets/2048 empty tile.png";break;
                     }
                 }
                 public void CreateRand() {
-                    int rand = (int)Math.floor(Math.random() * 17);
-                    int x = rand%4;
-                    int y = rand/4;
-                    if(filled[x][y] == false) {
-                        board[x][y].value = weightedChance();
-                        rendering(board[x][y]);
-                        filled[x][y]=true;
+                    if(isFull()) {
+                        end();//improving the efficiency adding this line at the top rather than stack recursions
+                        return;
                     }
-                    else {
-                        if(!isFull()) {
-                        CreateRand();
-                        }
-                        else  {
-                            end();
-                        }
-                    }
+ 
+                    int rand;
+                    int x,y;
+                    do{
+                        
+                        rand = (int)Math.floor(Math.random() * 16);
+                        x = rand%4;
+                        y = rand/4;
+
+                    }while(filled[x][y]);
                     
+                    board[x][y].value = weightedChance();
+                    filled[x][y]=true;
+                }
+
+
+                public Tile merge(Tile t1, Tile t2) {
+                    Tile res = new Tile();
+                    res.value = t1.value + t2.value;
+                    return res;
                 }
             
                 public void up() {
                     for(int x = 0; x < board.length; x++) {
                         for(int y = 1; y < board[0].length; y++) {
+                            
                             if(filled[x][y-1]) {
                             Tile temp = board[x][y];
                             board[x][y] = board[x][y-1];
@@ -99,6 +107,12 @@ public class Game {
                             boolean t = filled[x][y];
                             filled[x][y] = filled[x][y-1];
                             filled[x][y-1] = t;
+                            }
+                            else if(board[x][y-1] == board[x][y]) {
+                                board[x][y] = merge(board[x][y-1],board[x][y]);
+                                board[x][y-1].value = 0;
+                                filled[x][y-1] = false;
+                                y--;
                             }
                         }
                     }
@@ -167,10 +181,11 @@ public class Game {
                 this.gameboard.rendering(this.gameboard.board[row][col]);
                 ImageIcon image = new ImageIcon(this.gameboard.board[row][col].image);
                 griddy[row][col] = new JLabel(image);
-                tset
             }
-            window.getContentPane().add(tset);
         }
+        
+        tset.revalidate();
+        tset.repaint();
     }
      public void start() {
 
@@ -183,8 +198,8 @@ public class Game {
                 griddyLabels[row][col] = new JLabel(image);
                 tileset.add(griddyLabels[row][col]);
             }
-            window.getContentPane().add(tileset);
         }
+        window.getContentPane().add(tileset);
 
         window.setVisible(true);
         window.addKeyListener(new KeyAdapter() {
@@ -193,22 +208,22 @@ public class Game {
                 if(e.getKeyCode() == KeyEvent.VK_UP) {
                     gameboard.up();
                     gameboard.CreateRand();//don't use this keyword because gameboard does not belong to KeyAdapter
-                    update();
+                    update(griddyLabels, tileset);
                 }
                 else if(e.getKeyCode() == KeyEvent.VK_DOWN) {
                     gameboard.down();
                     gameboard.CreateRand();
-                    update();
+                    update(griddyLabels, tileset);
                 }
                 else if(e.getKeyCode() == KeyEvent.VK_LEFT) {
                     gameboard.left();
                     gameboard.CreateRand();
-                    update();
+                    update(griddyLabels, tileset);
                 }
                 else if(e.getKeyCode() == KeyEvent.VK_RIGHT) {
                     gameboard.right();
                     gameboard.CreateRand();
-                    update();
+                    update(griddyLabels, tileset);
                 }
             }
         });
