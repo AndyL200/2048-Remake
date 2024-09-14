@@ -8,7 +8,10 @@ public class Launcher {
             @Override
             public void run() {
                 Game main = new Game();
-                main.start();
+
+                main.enterState();
+
+                // main.start();
             }
         });
 

@@ -187,6 +187,23 @@ public class Game {
         tset.revalidate();
         tset.repaint();
     }
+
+    
+    public void enterState() {
+        ImageIcon image = new ImageIcon("Assets/2048 block start screen.png");
+        JLabel j = new JLabel(image);
+        JPanel enter = new JPanel();
+        enter.add(j);
+        window.getContentPane().add(enter);
+        window.setVisible(true);
+        window.addKeyListener(new KeyAdapter(){
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if(e.getKeyCode() == KeyEvent.VK_ENTER) {start();}
+            }
+        });
+
+    }
      public void start() {
 
         JPanel tileset = new JPanel(new GridLayout(4,4));
