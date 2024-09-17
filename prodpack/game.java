@@ -2,6 +2,8 @@ package prodpack;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import javax.sound.sampled.*;
+import java.io.File;
 
 public class Game {
 
@@ -131,6 +133,7 @@ public class Game {
                                     if(k > 0 && board[k-1][x].value == board[k][x].value) {
                                         board[k-1][x].value *= 2; //no need for a merge function (faster)
                                         board[k][x].value = 0;
+                                        y--;
                                     }
                         }
                     }
@@ -151,6 +154,7 @@ public class Game {
                                     if(k < board.length-1 && board[k+1][x].value == board[k][x].value) {
                                         board[k+1][x].value *= 2; //no need for a merge function (faster)
                                         board[k][x].value = 0;
+                                        y--;
                                     }
                         }
                     }
@@ -170,37 +174,48 @@ public class Game {
                                     if(k > 0 && board[y][k-1].value == board[y][k].value) {
                                         board[y][k-1].value *= 2; //no need for a merge function (faster)
                                         board[y][k].value = 0;
+                                        x--;
                                     }
                         }
                     }
                 }
         }
-                    public void right() {
-                            for(int y = 0; y < board.length; y++) {//rows
-                                for(int x = 0; x < board[0].length-1; x++) {
-                                if(board[y][x].value != 0) {
-                                    int k = x;
-                                    while(k < board[0].length-1 && board[y][k+1].value == 0) {
-                                        board[y][k+1].value = board[y][k].value;
-                                        board[y][k].value = 0;
-                                        k++;
-                                    }
-                                    //if the while loop terminated because the value above the current one equal to it, we want to merge them
-                                    if(k < board[0].length-1 && board[y][k+1].value == board[y][k].value) {
-                                        board[y][k+1].value *= 2; //no need for a merge function (faster)
-                                        board[y][k].value = 0;
-                                    }
-                        }
+        public void right() {
+            for(int y = 0; y < board.length; y++) {//rows
+                for(int x = 0; x < board[0].length-1; x++) {
+                if(board[y][x].value != 0) {
+                    int k = x;
+                    while(k < board[0].length-1 && board[y][k+1].value == 0) {
+                        board[y][k+1].value = board[y][k].value;
+                        board[y][k].value = 0;
+                        k++;
                     }
-                }
+                    //if the while loop terminated because the value above the current one equal to it, we want to merge them
+                    if(k < board[0].length-1 && board[y][k+1].value == board[y][k].value) {
+                        board[y][k+1].value *= 2; //no need for a merge function (faster)
+                        board[y][k].value = 0;
+                    }
         }
-
+    }
+}
+}
     }
 
     JFrame window;
     Board gameboard;
 
 
+        public void gameOver() {
+
+        }
+        Game(int width, int height) {
+            this.window = new JFrame();
+            this.gameboard = new Board();
+            window.setTitle("2048");
+            window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            window.setSize(width, height);
+            window.setLocationRelativeTo(null);
+        }
     Game() {
         this.window = new JFrame();
         this.gameboard = new Board();
