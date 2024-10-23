@@ -111,7 +111,7 @@ return false;
          */
         public boolean checkColUp(Tile[][] t, int col) {
             for(int i = t.length-1; i > 0; i--) {
-                if((t[i][col].value != 0 && t[i-1][col].value == 0) || (t[i][col].value != 0 && t[i][col].value == t[i+1][col].value)) {return false;}
+                if((t[i][col].value != 0 && t[i-1][col].value == 0) || (t[i][col].value != 0 && t[i][col].value == t[i-1][col].value)) {return false;}
             }
             return true;
         }
@@ -156,7 +156,7 @@ return false;
             
 }   
             public boolean checkColDown(Tile[][] t, int col) {
-                for(int i = 0; i < t.length;i++) {
+                for(int i = 0; i < t.length-1;i++) {
                     if((t[i][col].value != 0 && t[i+1][col].value == 0) || t[i][col].value != 0 && t[i][col].value == t[i+1][col].value) {return false;}
                 }
                 return true;

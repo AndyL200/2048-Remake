@@ -120,87 +120,115 @@ public class Game {
                  *Multimerging? what if two '2's combine to make 4 underneath an existing 4? Should those 4s directly merge?
                  */
                 
-                    public void up() {
-                        for(int x = 0; x < board[0].length; x++) {
-                            for(int y = 1; y < board.length; y++) {
-
-                                if(board[y][x].value != 0) {
-                                    int k = y;
-                                    while(k > 0 && board[k-1][x].value == 0) {
-                                        board[k-1][x].value = board[k][x].value;
-                                        board[k][x].value = 0;
-                                        k--;
-                                    }
-                                    //if the while loop terminated because the value above the current one equal to it, we want to merge them
-                                    if(k > 0 && board[k-1][x].value == board[k][x].value) {
-                                        board[k-1][x].value *= 2; //no need for a merge function (faster)
-                                        board[k][x].value = 0;
-                                        y--;
-                                    }
+                 public boolean checkColUp(Tile[][] t, int col) {
+                    for(int i = t.length-1; i > 0; i--) {
+                        if((t[i][col].value != 0 && t[i-1][col].value == 0) || (t[i][col].value != 0 && t[i][col].value == t[i-1][col].value)) {return false;}
+                    }
+                    return true;
+                }
+                public void up() {
+                    for(int x = 0; x < board[0].length;x++) {
+                        int k = 0;
+                        while (k < board.length-1) {
+                            if(board[k][x].value == board[k+1][x].value) {
+                                board[k][x].value *= 2;
+                                board[k+1][x].value = 0;
+                            }
+                            else if(board[k][x].value == 0) {
+                                board[k][x].value = board[k+1][x].value;
+                                board[k+1][x].value = 0;
+                            }
+                            if(k == board.length-2 && !checkColUp(board,x)) {k = -1;}
+                            k++;
                         }
+        
                     }
                 }
-                    
-        }
-                    public void down() {
-                        for(int x = 0; x < board[0].length; x++) {
-                            for(int y = 0; y < board.length-1; y++) {
-                                if(board[y][x].value != 0) {
-                                    int k = y;
-                                    while(k < board.length-1 && board[k+1][x].value == 0) {
-                                        board[k+1][x].value = board[k][x].value;
-                                        board[k][x].value = 0;
-                                        k++;
-                                    }
-                                    //if the while loop terminated because the value above the current one equal to it, we want to merge them
-                                    if(k < board.length-1 && board[k+1][x].value == board[k][x].value) {
-                                        board[k+1][x].value *= 2; //no need for a merge function (faster)
-                                        board[k][x].value = 0;
-                                        y--;
-                                    }
+                public boolean checkColDown(Tile[][] t, int col) {
+                    for(int i = 0; i < t.length-1;i++) {
+                        if((t[i][col].value != 0 && t[i+1][col].value == 0) || t[i][col].value != 0 && t[i][col].value == t[i+1][col].value) {return false;}
+                    }
+                    return true;
+                }
+                public void down() {
+                    for(int x = 0; x < board[0].length;x++) {
+                        int k = board.length-1;
+                        int count = 0;
+                        while (k > 0) {
+                            if(board[k][x].value == board[k-1][x].value) {
+                                board[k][x].value *=2;
+                                board[k-1][x].value = 0;
+                            }
+                            else if(board[k][x].value == 0) {
+                                board[k][x].value = board[k-1][x].value;
+                                board[k-1][x].value = 0;
+                            }
+                            if(k == 1 && !checkColDown(board,x)) {count++; k = board.length-count;}
+                            k--;
                         }
                     }
+            }      
+            public boolean checkRowLeft(Tile[][] t, int row) {
+                Tile[] x = t[row];
+                for(int i = x.length-1; i > 0;i--) {
+                    if(x[i].value != 0 && x[i-1].value == 0) {return false;}
                 }
-        }
-                    public void left() {
-                            for(int y = 0; y < board.length; y++) {
-                                for(int x = 1; x < board[0].length; x++) {
-                                if(board[y][x].value != 0) {
-                                    int k = x;
-                                    while(k > 0 && board[y][k-1].value == 0) {
-                                        board[y][k-1].value = board[y][k].value;
-                                        board[y][k].value = 0;
-                                        k--;
-                                    }
-                                    //if the while loop terminated because the value above the current one equal to it, we want to merge them
-                                    if(k > 0 && board[y][k-1].value == board[y][k].value) {
-                                        board[y][k-1].value *= 2; //no need for a merge function (faster)
-                                        board[y][k].value = 0;
-                                        x--;
-                                    }
+                return true;
+            }
+            public void left() {
+                for(int y = 0; y < board.length;y++) {
+                    int k = 0;
+                    while(k < board[0].length-1) {
+                        if(board[y][k].value == board[y][k+1].value) {
+                            board[y][k].value *=2;
+                            board[y][k+1].value = 0;
                         }
-                    }
-                }
-        }
-        public void right() {
-            for(int y = 0; y < board.length; y++) {//rows
-                for(int x = 0; x < board[0].length-1; x++) {
-                if(board[y][x].value != 0) {
-                    int k = x;
-                    while(k < board[0].length-1 && board[y][k+1].value == 0) {
-                        board[y][k+1].value = board[y][k].value;
-                        board[y][k].value = 0;
+                        else if(board[y][k].value == 0) {
+                            board[y][k].value = board[y][k+1].value;
+                            board[y][k+1].value = 0;
+            
+                        }
+                        if(k == board[0].length-2 && !checkRowLeft(board, y)) {k=-1;}
+            
                         k++;
                     }
-                    //if the while loop terminated because the value above the current one equal to it, we want to merge them
-                    if(k < board[0].length-1 && board[y][k+1].value == board[y][k].value) {
-                        board[y][k+1].value *= 2; //no need for a merge function (faster)
-                        board[y][k].value = 0;
+                }
+            }
+            public boolean checkRowRight(Tile[][] t, int row) {
+                Tile r[] = t[row];
+                for(int i = 0; i < r.length-1;i++) {
+                    if((r[i].value != 0 && r[i+1].value == 0) || (r[i].value != 0 && r[i].value == r[i+1].value)) {
+                        return false;
                     }
-        }
-    }
-}
-}
+                }
+                return true;
+            }
+            
+            public void right() { //better time complexity
+                for(int y = 0; y < board.length; y++) {
+                    int k = board[0].length-1;
+                    int count = 0;
+                    while(k > 0) {
+            
+                        if(board[y][k].value == board[y][k-1].value) {
+                            board[y][k].value *=2;
+                            board[y][k-1].value = 0;
+                            
+                        }
+                        else if (board[y][k].value == 0) {
+                            board[y][k].value = board[y][k-1].value;
+                            board[y][k-1].value = 0;
+                            
+                        }
+                        
+                        if(k == 1 && !checkRowRight(board,y)) {k = board[0].length-count;count++;}
+                        k--;
+                        
+                    }
+            
+                }
+                }
+            
     }
 
     JFrame window;
@@ -346,8 +374,6 @@ public class Game {
             }
         });
 
-    window.addContainerListener()
-
-            
-        }
+   
+     }
     }
