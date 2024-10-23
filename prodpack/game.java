@@ -4,6 +4,8 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.sound.sampled.*;
 import java.io.File;
+import java.util.concurrent.atomic.AtomicInteger;
+
 
 public class Game {
 
@@ -203,6 +205,7 @@ public class Game {
 
     JFrame window;
     Board gameboard;
+    java.awt.Dimension screen;
 
 
         public void gameOver() {
@@ -221,7 +224,9 @@ public class Game {
         this.gameboard = new Board();
         window.setTitle("2048");
         window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        window.setSize(256,256);
+        this.screen = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+        int width = screen.width/2, height = screen.height/2;
+        window.setSize(width,height);
         window.setLocationRelativeTo(null); //Centers the Frame on the screen
     }
 
@@ -229,8 +234,11 @@ public class Game {
         for(int row = 0; row < this.gameboard.board.length; row++) {
             for(int col = 0; col < this.gameboard.board[0].length;col++) {
                 this.gameboard.rendering(this.gameboard.board[row][col]);
-                ImageIcon image = new ImageIcon(this.gameboard.board[row][col].image);
+                ImageIcon icon = new ImageIcon(this.gameboard.board[row][col].image);
+                Image scaled = icon.getImage().getScaledInstance(window.getWidth()/4, window.getHeight()/4, Image.SCALE_SMOOTH);
+                ImageIcon image = new ImageIcon(scaled);
                 griddy[row][col].setIcon(image);
+                
             }
         }
 
@@ -241,7 +249,7 @@ public class Game {
             this.window.dispose();
             JFrame gameOver = new JFrame("Over Screen");
             gameOver.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            gameOver.setSize(256,256);
+            gameOver.setSize(window.getWidth(),window.getHeight());
             gameOver.setLocationRelativeTo(null);
             gameOver.getContentPane().add(end);
             gameOver.setVisible(true);
@@ -253,7 +261,7 @@ public class Game {
             this.window.dispose();
             JFrame gameWin = new JFrame("Win Screen");
             gameWin.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            gameWin.setSize(256,256);
+            gameWin.setSize(window.getWidth(),window.getHeight());
             gameWin.setLocationRelativeTo(null);
             gameWin.getContentPane().add(end);
             gameWin.setVisible(true);
@@ -264,7 +272,9 @@ public class Game {
 
     
     public void enterState() {
-        ImageIcon image = new ImageIcon("Assets/2048 block start screen.png");
+        ImageIcon icon = new ImageIcon("Assets/2048 block start screen.png");
+        Image i = icon.getImage().getScaledInstance(window.getWidth(), window.getHeight(), Image.SCALE_SMOOTH);
+        ImageIcon image = new ImageIcon(i);
         JLabel j = new JLabel(image);
         JPanel enter = new JPanel();
         enter.add(j);
@@ -279,6 +289,7 @@ public class Game {
 
     }
      public void start() {
+        AtomicInteger fullCount = new AtomicInteger();
 
         JPanel tileset = new JPanel(new GridLayout(4,4));
         JLabel[][] griddyLabels = new JLabel[4][4];
@@ -317,10 +328,25 @@ public class Game {
                     gameboard.CreateRand();
                     update(griddyLabels, tileset);
                 }
+
+                else if(e.getKeyCode() == KeyEvent.VK_F11) {
+                    java.awt.Dimension screen = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+                    int width = screen.width, height = screen.height;
+
+                    fullCount.set(fullCount.get()+1);
+                    if(fullCount.get() %2 == 1) {
+                    
+                    window.setSize(width,height);
+                }
+                    else {
+                    window.setSize(width/2,height/2);
+                    }
+            }
+
             }
         });
 
-    
+    window.addContainerListener()
 
             
         }
